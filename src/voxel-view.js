@@ -1,4 +1,6 @@
-class VoxelView {
+import ColorTrie from './trie'
+
+export default class VoxelView {
   num_colors = 0;
   edge_dim = 0;
   ratio = 0;

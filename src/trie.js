@@ -1,5 +1,5 @@
 
-class ColorTrie {
+export default class ColorTrie {
   _storage = {}
 
   addColor(color) {
@@ -19,5 +19,3 @@ class ColorTrie {
     return true;
   }
 }
-
-window.ColorTrie = ColorTrie
