@@ -34,7 +34,12 @@ export default class VoxelView {
       this.edge_dim
     ];
 
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    console.log(this.mount_point.getBoundingClientRect())
+
+    this.renderer.setSize(
+      this.mount_point.getBoundingClientRect().width, 
+      this.mount_point.getBoundingClientRect().height
+    );
 
     mount_point.appendChild(this.make_label())
 
