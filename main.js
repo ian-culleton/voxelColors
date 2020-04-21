@@ -7,7 +7,7 @@ const app = express();
 app.use(express.urlencoded())
 
 app.use((req, res, next) => {
-  console.log('serving request:', req.method, req.url, req.query)
+  console.log('serving request:', req.method, req.url, req.params)
   next()
 })
 
@@ -21,6 +21,13 @@ app.get('/images', (req, res) => {
   const dirs = fs.readdirSync(path.join(__dirname, 'public/images'));
   res.status(200).send(dirs)
 })
+
+app.get('/image/:image_label', (req, res) => {
+  const { image_label } = req.params
+  console.log(req.params);
+  res.status(200).sendFile(path.join(__dirname, `public/images/${image_label}/${image_label}.jpg`))
+})
+
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('listening on port ', process.env.PORT || 3000)
