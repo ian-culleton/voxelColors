@@ -22,9 +22,13 @@ export default class VoxelView {
 
   constructor({
     num_colors=16,
-    mount_point=document.body
+    mount_point=document.body,
+    outline=false,
+    label=false,
   }) {
     this.mount_point = mount_point
+    this.outline = outline;
+    this.label = label;
     this.num_colors = num_colors;
     this.edge_dim = Math.round(Math.cbrt(num_colors));
     this.ratio = this.edge_dim / 256;
@@ -41,7 +45,9 @@ export default class VoxelView {
       this.mount_point.getBoundingClientRect().height
     );
 
-    mount_point.appendChild(this.make_label())
+    if(this.label) {
+      mount_point.appendChild(this.make_label())
+    }
 
     mount_point.appendChild(this.renderer.domElement);
   }
@@ -193,7 +199,9 @@ export default class VoxelView {
       this.group.add(voxel)
     })
 
-    this.draw_outline();
+    if(this.outline) {
+      this.draw_outline();
+    }
 
     this.mount_point.addEventListener('keydown', this.handle_key_press.bind(this))
 

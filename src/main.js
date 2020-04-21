@@ -6,7 +6,8 @@ const queryMap = UrlReader.read()
 
 const voxView = new VoxelView({
   num_colors: queryMap.num_colors || 256,
-  mount_point: document.getElementById("MountPoint")
+  mount_point: document.getElementById("MountPoint"),
+  outline: queryMap.outline === "true"
 })
 
 fetch(`images/${queryMap.p}/${queryMap.p}.data.json`)
