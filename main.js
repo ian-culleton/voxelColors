@@ -25,7 +25,13 @@ app.get('/images', (req, res) => {
 app.get('/image/:image_label', (req, res) => {
   const { image_label } = req.params
   console.log(req.params);
-  res.status(200).sendFile(path.join(__dirname, `public/images/${image_label}/${image_label}.jpg`))
+  if(fs.existsSync(`public/images/${image_label}/${image_label}.jpg`)) {
+    res.status(200).sendFile(path.join(__dirname, `public/images/${image_label}/${image_label}.jpg`))
+  } else if (fs.existsSync(`public/images/${image_label}/${image_label}.png`)) {
+    res.status(200).sendFile(path.join(__dirname, `public/images/${image_label}/${image_label}.png`))
+  } else {
+    res.sendStatus(404)
+  }
 })
 
 
