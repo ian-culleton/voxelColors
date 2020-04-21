@@ -3,6 +3,7 @@
 
   class ColorTrie {
     _storage = {}
+    _total_added = 0
 
     addColor(color) {
       let [r, g, b] = color;
@@ -10,7 +11,12 @@
 
       if(this._storage[r][g] === undefined) this._storage[r][g] = {};
 
-      if(this._storage[r][g][b] === undefined) this._storage[r][g][b] = true;
+      if(this._storage[r][g][b] === undefined) {
+        this._storage[r][g][b] = 1;
+        this._total_added++;
+      }
+
+      if(this._storage[r][g][b] > 0) this._storage[r][g][b]++;
     }
 
     contains(color) {
@@ -19,6 +25,22 @@
       if(!this._storage[r][g]) return false;
       if(!this._storage[r][g][b]) return false;
       return true;
+    }
+
+    density(color) {
+      let [r, g, b] = color;
+      if(!this._storage[r]) return false;
+      if(!this._storage[r][g]) return false;
+      if(!this._storage[r][g][b]) return false;
+      return this._storage[r][g][b] / this._total_added;
+    }
+
+    count(color) {
+      let [r, g, b] = color;
+      if(!this._storage[r]) return false;
+      if(!this._storage[r][g]) return false;
+      if(!this._storage[r][g][b]) return false;
+      return this._storage[r][g][b];
     }
   }
 
@@ -47,10 +69,12 @@
       mount_point=document.body,
       outline=false,
       label=false,
+      opacity=false
     }) {
       this.mount_point = mount_point;
-      this.outline = outline;
-      this.label = label;
+      this.useOutline = outline;
+      this.useLabel = label;
+      this.useOpacity = opacity;
       this.num_colors = num_colors;
       this.edge_dim = Math.round(Math.cbrt(num_colors));
       this.ratio = this.edge_dim / 256;
@@ -67,7 +91,7 @@
         this.mount_point.getBoundingClientRect().height
       );
 
-      if(this.label) {
+      if(this.useLabel) {
         mount_point.appendChild(this.make_label());
       }
 
@@ -93,20 +117,29 @@
     }
 
     make_entry_group() {
-      return this.colors_to_render.map(color => {
+      const normalized_colors = this.colors_to_render.map(color => {
         const scaled_color = [
           Math.round(color[0] * this.ratio), 
           Math.round(color[1] * this.ratio), 
           Math.round(color[2] * this.ratio)
         ];
         return scaled_color;
-      })
+      });
+
+      const unique_normalized_colors = normalized_colors
       .filter((color) => {
         const found = this.trie.contains(color);
         this.trie.addColor(color);
         return !found
-      }) 
-      .map((color) => {
+      }); 
+
+      const trieMaxDensity = Math.max.apply(null, unique_normalized_colors.map(col => this.trie.density(col)));
+      console.log(trieMaxDensity);
+
+      return unique_normalized_colors
+      .map((color, idx, allColors) => {
+        
+    
         const x = Number(color[0]), 
           y = Number(color[1]), 
           z = Number(color[2]),
@@ -125,6 +158,8 @@
             (y / this.edge_dim), 
             (z / this.edge_dim),
           ),
+          transparent: true,
+          opacity: this.useOpacity ? this.trie.density(color) / trieMaxDensity : 1,
           vertexColors: true
         });
         var cube = new THREE.Mesh( geometry, material );
@@ -221,7 +256,7 @@
         this.group.add(voxel);
       });
 
-      if(this.outline) {
+      if(this.useOutline) {
         this.draw_outline();
       }
 
@@ -252,15 +287,16 @@
     }
   }
 
-  const queryMap = UrlReader.read();
+  const { p, num_colors: num_colors$1, outline, opacity } = UrlReader.read();
 
   const voxView = new VoxelView({
-    num_colors: queryMap.num_colors || 256,
+    num_colors: num_colors$1 || 256,
     mount_point: document.getElementById("MountPoint"),
-    outline: queryMap.outline === "true"
+    outline: outline === "true",
+    opacity: opacity === "true"
   });
 
-  fetch(`images/${queryMap.p}/${queryMap.p}.data.json`)
+  fetch(`images/${p}/${p}.data.json`)
   .then(data => data.json())
   .then(rgbValues => {
     voxView.set_colors(rgbValues);

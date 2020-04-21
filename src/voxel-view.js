@@ -25,10 +25,12 @@ export default class VoxelView {
     mount_point=document.body,
     outline=false,
     label=false,
+    opacity=false
   }) {
     this.mount_point = mount_point
-    this.outline = outline;
-    this.label = label;
+    this.useOutline = outline;
+    this.useLabel = label;
+    this.useOpacity = opacity;
     this.num_colors = num_colors;
     this.edge_dim = Math.round(Math.cbrt(num_colors));
     this.ratio = this.edge_dim / 256;
@@ -45,7 +47,7 @@ export default class VoxelView {
       this.mount_point.getBoundingClientRect().height
     );
 
-    if(this.label) {
+    if(this.useLabel) {
       mount_point.appendChild(this.make_label())
     }
 
@@ -71,7 +73,7 @@ export default class VoxelView {
   }
 
   make_entry_group() {
-    return this.colors_to_render.map(color => {
+    const normalized_colors = this.colors_to_render.map(color => {
       const scaled_color = [
         Math.round(color[0] * this.ratio), 
         Math.round(color[1] * this.ratio), 
@@ -79,12 +81,21 @@ export default class VoxelView {
       ];
       return scaled_color;
     })
+
+    const unique_normalized_colors = normalized_colors
     .filter((color) => {
       const found = this.trie.contains(color)
       this.trie.addColor(color)
       return !found
     }) 
-    .map((color) => {
+
+    const trieMaxDensity = Math.max.apply(null, unique_normalized_colors.map(col => this.trie.density(col)))
+    console.log(trieMaxDensity)
+
+    return unique_normalized_colors
+    .map((color, idx, allColors) => {
+      
+  
       const x = Number(color[0]), 
         y = Number(color[1]), 
         z = Number(color[2]),
@@ -103,6 +114,8 @@ export default class VoxelView {
           (y / this.edge_dim), 
           (z / this.edge_dim),
         ),
+        transparent: true,
+        opacity: this.useOpacity ? this.trie.density(color) / trieMaxDensity : 1,
         vertexColors: true
       });
       var cube = new THREE.Mesh( geometry, material );
@@ -199,7 +212,7 @@ export default class VoxelView {
       this.group.add(voxel)
     })
 
-    if(this.outline) {
+    if(this.useOutline) {
       this.draw_outline();
     }
 

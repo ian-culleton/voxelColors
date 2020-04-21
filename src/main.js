@@ -2,15 +2,16 @@ import VoxelView from './voxel-view'
 import UrlReader from './url-reader'
 import Dropdown from './dropdown'
 
-const queryMap = UrlReader.read()
+const { p, num_colors, outline, opacity } = UrlReader.read()
 
 const voxView = new VoxelView({
-  num_colors: queryMap.num_colors || 256,
+  num_colors: num_colors || 256,
   mount_point: document.getElementById("MountPoint"),
-  outline: queryMap.outline === "true"
+  outline: outline === "true",
+  opacity: opacity === "true"
 })
 
-fetch(`images/${queryMap.p}/${queryMap.p}.data.json`)
+fetch(`images/${p}/${p}.data.json`)
 .then(data => data.json())
 .then(rgbValues => {
   voxView.set_colors(rgbValues);
