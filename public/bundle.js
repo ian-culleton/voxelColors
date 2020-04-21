@@ -64,6 +64,8 @@
     }
     
     set_colors(color_list) {
+      this.scene.remove(this.group.id);
+
       this.colors_to_render = color_list;
     }
 
@@ -74,6 +76,7 @@
 
       container.style.textAlign = "center";
       container.style.backgroundColor = "gainsboro";
+      container.style.width = window.innerWidth;
 
       return container;
     }
@@ -203,10 +206,6 @@
     }
 
     render() {
-      this.group.children.forEach(voxel => {
-        this.group.remove(voxel.id);
-      });
-
       this.make_entry_group().forEach(voxel => {
         this.group.add(voxel);
       });
@@ -242,22 +241,23 @@
 
   const queryMap = UrlReader.read();
 
-  console.log(queryMap);
-
   const voxView = new VoxelView({
     num_colors: queryMap.num_colors || 256,
     mount_point: document.body
   });
 
-  fetch(`assets/${queryMap.p}/${queryMap.p}.data.json`)
+  fetch(`images/${queryMap.p}/${queryMap.p}.data.json`)
   .then(data => data.json())
   .then(rgbValues => {
     voxView.set_colors(rgbValues);
     voxView.render();
   });
 
-  // voxView.set_colors(rgbVals);
-
-  // voxView.render()
+  // fetch('/images')
+  // .then(data => data.json())
+  // .then(images => {
+  //   let dd = new Dropdown({options: images, voxView});
+  //   document.body.appendChild(dd.render());
+  // })
 
 }());

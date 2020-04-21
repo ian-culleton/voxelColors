@@ -42,6 +42,8 @@ export default class VoxelView {
   }
   
   set_colors(color_list) {
+    this.scene.remove(this.group.id)
+
     this.colors_to_render = color_list
   }
 
@@ -52,6 +54,7 @@ export default class VoxelView {
 
     container.style.textAlign = "center"
     container.style.backgroundColor = "gainsboro"
+    container.style.width = window.innerWidth
 
     return container;
   }
@@ -181,10 +184,6 @@ export default class VoxelView {
   }
 
   render() {
-    this.group.children.forEach(voxel => {
-      this.group.remove(voxel.id);
-    })
-
     this.make_entry_group().forEach(voxel => {
       this.group.add(voxel)
     })
