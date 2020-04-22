@@ -40,8 +40,6 @@ export default class VoxelView {
       this.edge_dim
     ];
 
-    console.log(this.mount_point.getBoundingClientRect())
-
     this.renderer.setSize(
       this.mount_point.getBoundingClientRect().width, 
       this.mount_point.getBoundingClientRect().height
@@ -90,7 +88,6 @@ export default class VoxelView {
     }) 
 
     const trieMaxDensity = Math.max.apply(null, unique_normalized_colors.map(col => this.trie.density(col)))
-    console.log(trieMaxDensity)
 
     return unique_normalized_colors
     .map((color, idx, allColors) => {
