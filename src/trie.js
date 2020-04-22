@@ -1,7 +1,9 @@
 
 export default class ColorTrie {
-  _storage = {}
-  _total_added = 0
+  constructor() {
+    this._storage = {}
+    this._total_added = 0
+  }
 
   addColor(color) {
     let [r, g, b] = color

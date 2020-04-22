@@ -2,8 +2,10 @@
   'use strict';
 
   class ColorTrie {
-    _storage = {}
-    _total_added = 0
+    constructor() {
+      this._storage = {};
+      this._total_added = 0;
+    }
 
     addColor(color) {
       let [r, g, b] = color;
@@ -45,25 +47,6 @@
   }
 
   class VoxelView {
-    num_colors = 0;
-    edge_dim = 0;
-    ratio = 0;
-    dims = [0, 0, 0];
-
-    group_scale = 3;
-
-    velocity = {
-      x: 0, y: 0, z: 0
-    }
-
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer();
-    group = new THREE.Group();
-    trie = new ColorTrie();
-
-    colors_to_render = [];
-
     constructor({
       num_colors=16,
       mount_point=document.body,
@@ -71,6 +54,25 @@
       label=false,
       opacity=false
     }) {
+      this.num_colors = 0;
+      this.edge_dim = 0;
+      this.ratio = 0;
+      this.dims = [0, 0, 0];
+    
+      this.group_scale = 3;
+    
+      this.velocity = {
+        x: 0, y: 0, z: 0
+      };
+    
+      this.scene = new THREE.Scene();
+      this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      this.renderer = new THREE.WebGLRenderer();
+      this.group = new THREE.Group();
+      this.trie = new ColorTrie();
+    
+      this.colors_to_render = [];
+
       this.mount_point = mount_point;
       this.useOutline = outline;
       this.useLabel = label;
@@ -287,10 +289,10 @@
     }
   }
 
-  const { p, num_colors: num_colors$1, outline, opacity } = UrlReader.read();
+  const { p, num_colors, outline, opacity } = UrlReader.read();
 
   const voxView = new VoxelView({
-    num_colors: num_colors$1 || 256,
+    num_colors: num_colors || 256,
     mount_point: document.getElementById("MountPoint"),
     outline: outline === "true",
     opacity: opacity === "true"
